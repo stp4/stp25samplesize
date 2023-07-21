@@ -8,11 +8,7 @@
 #' @param ...
 #'
 #' @export
-#' @importFrom pwr pwr.f2.test
-#' @importFrom pwr pwr.r.test
-#' @importFrom pwr pwr.anova.test
-#' @importFrom WebPower wp.kanova
-#' @importFrom WebPower wp.rmanova
+
 sample_size <-   function(x,
                           ...) {
   UseMethod("sample_size")
@@ -103,7 +99,7 @@ sample_size.character <-
     rslt <- NULL
     if (x[1] %in% c("f2", "lm")) {
       for (j in f2) {
-        x <- sample_size(pwr.f2.test(
+        x <- sample_size(pwr::pwr.f2.test(
           u = if (!is.null(u))
             u
           else
@@ -119,7 +115,7 @@ sample_size.character <-
     }
     else if (x[1] %in% c("cor", "r")) {
         for (j in r) {
-        x <- sample_size (pwr.r.test(
+        x <- sample_size (pwr::pwr.r.test(
           r = j,
           sig.level = sig.level,
           power = power
@@ -133,7 +129,7 @@ sample_size.character <-
       for (j in f) {
 
         x <- sample_size (
-          pwr.anova.test(
+          pwr::pwr.anova.test(
             k = if (length(ndf) == 0)
               2
             else
@@ -150,6 +146,7 @@ sample_size.character <-
 
     }
     else if (x[1] == "anova" & measurements==1) {
+      cat("\n wp.kanova:\n")
       for (j in f) {
         x <- sample_size (wp.kanova(
           ndf = ndf,
@@ -165,7 +162,23 @@ sample_size.character <-
 
     }
     else if (x[1] == "anova" & measurements>1) {
+      
+      cat("\n wp.rmanova:\n")
+      
       for (j in f) {
+        
+        
+        print( list(
+          
+          ng = ng,
+          nm = nm,
+          n = NULL,
+          f = j, nscor=nscor,
+          alpha = sig.level,
+          power = power,
+          type=type
+        ))
+        
         x <- sample_size(
           wp.rmanova(
 
@@ -199,7 +212,7 @@ sample_size.character <-
     else if ( x[1] ==  "t.test"){
 
       for (j in d) {
-        x <- sample_size (pwr.t.test(
+        x <- sample_size (pwr::pwr.t.test(
           d = j,
           sig.level = sig.level,
           power = power,
@@ -292,6 +305,8 @@ sample_size.power.htest <- function(x) {
 #' @rdname sample_size
 #' @export
 sample_size.webpower <- function(x) {
+  
+  print(x)
 
 if(x$method =="Multiple way ANOVA analysis")
   data.frame(
@@ -325,35 +340,4 @@ else if(x$method == "Repeated-measures ANOVA analysis")
 }
 
 
-
-# sample_size(pwr.f2.test(
-#   u = 6,
-#   f2 = .4,
-#   sig.level = 0.05,
-#   power = 0.80
-# ))
-#
-#
-# sample_size("lm", df = 2)
-#
-#
-#
-# sample_size( pwr.r.test(  r = .3, sig.level = 0.05, power = .80 ))
-# sample_size("cor")
-#
-#
-# sample_size(pwr.anova.test(f=0.28,k=2,power=0.80,sig.level=0.05))
-#sample_size(wp.kanova(ndf=1, f=.7, ng=1, alpha=0.05, power=0.80))
-#sample_size(wp.kanova(ndf=1, f=.5, ng=2*4, alpha=0.05, power=0.80)
-# require(stp25samplesize)
-# require(pwr)
-#
-# pwr.chisq.test(w=0.10 , sig.level=.05, power=.80,  df=(4-1)*(3-1))
-# sample_size( "chisq.test",w=0.10 , sig.level=.05, power=.80,  df=(4-1)*(3-1))
-
-
-
-
-
-
-
+ 
